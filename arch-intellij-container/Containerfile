@@ -1,0 +1,29 @@
+FROM docker.io/archlinux:base
+RUN pacman-key --init && pacman -Syu --noconfirm \
+    && \
+    pacman -S --noconfirm \
+        base-devel wget git p7zip zip unzip \
+        openssh mc tmux vim ripgrep \
+    && \
+    yes|pacman -Scc
+RUN pacman -Sy --noconfirm \
+        xorg-server xorg-apps gnu-free-fonts noto-fonts ttf-dejavu \
+    && \
+    yes|pacman -Scc
+RUN pacman -Sy --noconfirm \
+        jdk8-openjdk jdk11-openjdk maven \
+        intellij-idea-community-edition \
+        ttf-liberation ttf-lato ttf-ubuntu-font-family \
+            ttf-droid ttf-hack ttf-anonymous-pro ttf-fira-code ttf-fantasque-sans-mono \
+            ttf-inconsolata ttf-iosevka-nerd ttf-proggy-clean ttf-roboto-mono \
+    && \
+    archlinux-java set java-11-openjdk \
+    && \
+    rm -f /var/cache/pacman/pkg/* && yes|pacman -Scc
+RUN mkdir -p /root/.local/share/JetBrains && \
+    mkdir -p /root/.config/JetBrains && \
+    mkdir -p /root/.cache/JetBrains && \
+    mkdir -p /root/.m2 && \
+    mkdir -p /root/.java && \
+    mkdir -p /root/code
+CMD idea
