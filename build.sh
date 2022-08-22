@@ -10,6 +10,5 @@ fi
 # --no-cache
 podman build \
     -t dmn/arch-intellij \
-    -f arch-intellij-container \
-    $ADDITIONAL_ARGUMENTS \
-    .
+    -f arch-intellij-container/Containerfile \
+    $ADDITIONAL_ARGUMENTS

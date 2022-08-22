@@ -1,29 +1,55 @@
 FROM docker.io/archlinux:base
-RUN pacman-key --init && pacman -Syu --noconfirm \
+RUN pacman-key --init && pacman -Syy --noconfirm \
+    && \
+    pacman -S archlinux-keyring --noconfirm \
+    && \
+    pacman -Su --noconfirm \
     && \
     pacman -S --noconfirm \
         base-devel wget git p7zip zip unzip \
-        openssh mc tmux vim ripgrep \
+        openssh mc tmux vim ripgrep fd \
     && \
     yes|pacman -Scc
-RUN pacman -Sy --noconfirm \
+RUN pacman -S --noconfirm \
         xorg-server xorg-apps gnu-free-fonts noto-fonts ttf-dejavu \
+        ttf-liberation ttf-lato ttf-ubuntu-font-family \
+        ttf-droid ttf-hack ttf-anonymous-pro ttf-fira-code ttf-fantasque-sans-mono \
+        ttf-inconsolata ttf-iosevka-nerd ttf-proggy-clean ttf-roboto-mono \
     && \
     yes|pacman -Scc
-RUN pacman -Sy --noconfirm \
+
+RUN cd /tmp/ \
+    && \
+    useradd --no-create-home --uid 3000 --gid 0 --no-user-group builduser \
+    && \
+    sudo -u builduser git clone https://aur.archlinux.org/intellij-idea-ce.git \
+    && \
+    cd intellij-idea-ce/ \
+    && \
+    pacman -S --needed --noconfirm $(cat PKGBUILD |grep 'depends=' | sed -r 's/.+\(//' | sed -r 's/\).*//' | sed -r "s/'//g") \
+    && \
+    sudo -u builduser makepkg PKGBUILD \
+    && \
+    userdel -r builduser \
+    && \
+    pacman -U intellij-idea-ce-*.tar.zst --noconfirm  \
+    && \
+    cd && rm -rf /tmp/* \
+    && \
+    yes|pacman -Scc
+
+RUN pacman -S --noconfirm \
         jdk8-openjdk jdk11-openjdk maven \
-        intellij-idea-community-edition \
-        ttf-liberation ttf-lato ttf-ubuntu-font-family \
-            ttf-droid ttf-hack ttf-anonymous-pro ttf-fira-code ttf-fantasque-sans-mono \
-            ttf-inconsolata ttf-iosevka-nerd ttf-proggy-clean ttf-roboto-mono \
     && \
     archlinux-java set java-11-openjdk \
     && \
     rm -f /var/cache/pacman/pkg/* && yes|pacman -Scc
+
 RUN mkdir -p /root/.local/share/JetBrains && \
     mkdir -p /root/.config/JetBrains && \
     mkdir -p /root/.cache/JetBrains && \
     mkdir -p /root/.m2 && \
     mkdir -p /root/.java && \
     mkdir -p /root/code
-CMD idea
+CMD idea-ce
+
