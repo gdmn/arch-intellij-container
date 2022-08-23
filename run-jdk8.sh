@@ -3,12 +3,9 @@
 SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 export NAME="idea-jdk8"
 ADDITIONAL_ARGUMENTS=""
-if [ -d $HOME/bin ]; then
-    ADDITIONAL_ARGUMENTS="$ADDITIONAL_ARGUMENTS -v $HOME/bin:/root/bin"
-fi
-if [ -d $XDG_RUNTIME_DIR ]; then
-    ADDITIONAL_ARGUMENTS="$ADDITIONAL_ARGUMENTS -v $XDG_RUNTIME_DIR:/root/tmp"
-fi
+#if [ -d $XDG_RUNTIME_DIR ]; then
+#    ADDITIONAL_ARGUMENTS="$ADDITIONAL_ARGUMENTS -v $XDG_RUNTIME_DIR:/root/tmp"
+#fi
 
 BACKGROUND="$(mktemp)"
 cat <<EOF >"$BACKGROUND"
@@ -21,6 +18,7 @@ ENTRYPOINT="$(mktemp)"
 cat <<EOF >"$ENTRYPOINT"
     echo "Arguments: $@"
     archlinux-java set java-8-openjdk
+    archlinux-java status
     javac -version
     java -version
     mvn -v
@@ -28,7 +26,7 @@ cat <<EOF >"$ENTRYPOINT"
     echo 'Calling background script...'
     bash /root/background.sh &
     cd /root/code/
-    idea
+    idea-ce
 EOF
 
 ADDITIONAL_ARGUMENTS="$ADDITIONAL_ARGUMENTS -v $ENTRYPOINT:/root/entrypoint.sh:ro"

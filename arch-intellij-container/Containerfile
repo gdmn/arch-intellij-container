@@ -5,18 +5,27 @@ RUN pacman-key --init && pacman -Syy --noconfirm \
     && \
     pacman -Su --noconfirm \
     && \
-    pacman -S --noconfirm \
+    pacman -S --needed --noconfirm \
         base-devel wget git p7zip zip unzip \
         openssh mc tmux vim ripgrep fd \
     && \
     yes|pacman -Scc
-RUN pacman -S --noconfirm \
+RUN pacman -S --needed --noconfirm \
         xorg-server xorg-apps gnu-free-fonts noto-fonts ttf-dejavu \
         ttf-liberation ttf-lato ttf-ubuntu-font-family \
         ttf-droid ttf-hack ttf-anonymous-pro ttf-fira-code ttf-fantasque-sans-mono \
         ttf-inconsolata ttf-iosevka-nerd ttf-proggy-clean ttf-roboto-mono \
     && \
     yes|pacman -Scc
+
+RUN pacman -S --needed --noconfirm \
+        jdk8-openjdk jdk11-openjdk jdk17-openjdk maven \
+    && \
+    archlinux-java set java-17-openjdk \
+    && \
+    archlinux-java status && javac -version && java -version && mvn -version \
+    && \
+    rm -f /var/cache/pacman/pkg/* && yes|pacman -Scc
 
 RUN cd /tmp/ \
     && \
@@ -37,13 +46,6 @@ RUN cd /tmp/ \
     cd && rm -rf /tmp/* \
     && \
     yes|pacman -Scc
-
-RUN pacman -S --noconfirm \
-        jdk8-openjdk jdk11-openjdk maven \
-    && \
-    archlinux-java set java-11-openjdk \
-    && \
-    rm -f /var/cache/pacman/pkg/* && yes|pacman -Scc
 
 RUN mkdir -p /root/.local/share/JetBrains && \
     mkdir -p /root/.config/JetBrains && \

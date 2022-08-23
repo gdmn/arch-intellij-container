@@ -46,6 +46,10 @@ if [ -d /var/cache/pacman/pkg ]; then
     ADDITIONAL_ARGUMENTS="$ADDITIONAL_ARGUMENTS -v /var/cache/pacman/pkg:/var/cache/pacman/pkg:O"
 fi
 
+if [ -d $HOME/bin ]; then
+    ADDITIONAL_ARGUMENTS="$ADDITIONAL_ARGUMENTS -v $HOME/bin:/root/bin"
+fi
+
 mkdir -p ~/.ssh
 chmod 700 ~/.ssh
 if [ -d ~/.ssh ]; then
